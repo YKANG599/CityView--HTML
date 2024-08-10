@@ -12,6 +12,7 @@ let objs = {
     }
 }
 
+
 const unsplashKey = '-Pyb7jp_r8TSIPgHobqUq4q8EUhmijBOUSfc_7gHrlc'
 
 // selects the <body> element of the HTML document and assigns it
@@ -81,6 +82,7 @@ const renderImage = function(arrImages){
 // Update the background image
 const updateBackgroundImage = function(url2){
     objs.body.style.background = `url('${url2}') no-repeat center center fixed`
+    console.log('success')
 }
 
 const setImageSelected = function(eleImage){
@@ -91,52 +93,57 @@ const setImageSelected = function(eleImage){
     eleImage.className = 'selected'
 }
 
-let isImageSelected = false
-
 const createCarousel = function(arrImages){
     objs.carousel.innerHTML = '' // Clear the existing carousel content
 
-    for(let i = 0; i < arrImages.length; i++){
+
+    for(let i = 0; i<arrImages.length; i++){
+
+        // For each image, a new div element is created with the class name imgContainer.
         let item = document.createElement('div')
         item.className = 'imgContainer'
 
         const img = arrImages[i].urls.thumb
         item.style.background = `url('${img}') no-repeat center center fixed`
 
+        //item.dataset.index = i sets a custom data attribute data-index on the item element.
         item.dataset.index = i
         item.style.animation = 'fadeIn 0.25s forwards'
-        item.style.animationDuration = `${0.1 * i}s`
+        item.style.animationDuration = `${0.1*i}`
         item.dataset.url = arrImages[i].urls.full
         objs.carousel.appendChild(item)
-
         item.addEventListener('click', function(evt){
             updateBackgroundImage(evt.target.dataset.url)
             setImageSelected(evt.target)
-            isImageSelected = true // Mark that an image is selected
+
         })
 
+
         item.addEventListener('mouseenter', function(evt){
-            if (!isImageSelected) { // Only update if no image is selected
-                let newUrl = evt.target.dataset.url
+            let newUrl = evt.target.dataset.url
 
-                if (!objs.preUrl) {
-                    let str = objs.body.style.background
-                    let iStart = str.indexOf('"')
-                    let iEnd = str.indexOf('"', iStart + 1)
-                    str = str.slice(iStart + 1, iEnd)
+            // Check if the objs.preUrl property is null or undefined
+            if(!objs.preUrl){
+                let str = objs.body.style.background
 
-                    objs.preUrl = str
-                    updateBackgroundImage(newUrl)
-                }
+                let iStart = str.indexOf('"')
+                let iEnd = str.indexOf('"', iStart + 1)
+                str = str.slice(iStart+1, iEnd)
+
+                objs.preUrl = str
+                updateBackgroundImage(newUrl)
             }
+
         })
 
         item.addEventListener('mouseleave', function(evt){
-            if (!isImageSelected && objs.preUrl) { // Only reset if no image is selected
+            if(objs.preUrl){
                 updateBackgroundImage(objs.preUrl)
                 objs.preUrl = null
             }
+
         })
+
     }
 }
 
